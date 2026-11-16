@@ -65,6 +65,6 @@ test('no em dash appears in shipped source text', async () => {
   const dir = path.dirname(fileURLToPath(import.meta.url));
   for (const f of files) {
     const text = fs.readFileSync(path.join(dir, f), 'utf8');
-    assert.ok(!text.includes('—'), `${f} contains an em dash`);
+    assert.ok(!text.includes(String.fromCharCode(0x2014)), `${f} contains an em dash`);
   }
 });
