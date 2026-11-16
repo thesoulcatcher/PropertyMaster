@@ -28,7 +28,7 @@ Commits, oldest first:
 
 ## What is done (Part A slice)
 
-- Calculators, all pure functions with tests (45 tests pass):
+- Calculators, all pure functions with tests (61 tests pass, including the outreach controls):
   - Purchase tax by nation: England, Northern Ireland (SDLT), Scotland (LBTT with ADS), Wales (LTT).
   - Deal: total cost, gross and net yield, monthly cashflow, exit profit.
   - Refinance test: loan to value and interest cover, the lower one wins.

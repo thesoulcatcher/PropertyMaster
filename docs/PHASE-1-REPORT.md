@@ -14,7 +14,7 @@ Status date: 2026-11-16. Part A is only partly built. Part B is not started.
 | Area sources | Licence, attribution, level and wording for each source; blocked sites listed | in area-and-flags.test.js |
 | Feature flags | All gated features off, each with its compliance row | in area-and-flags.test.js |
 
-Total: 45 tests, all passing (`node --test`).
+Total: 61 tests, all passing (`node --test`).
 
 ## Stubs
 
@@ -50,3 +50,15 @@ No Google SDK in any build. `package.json` has no dependencies. Recorded 2026-11
 1. Verify the tax and HMO tables at source and set `verified` with the date.
 2. Choose the web and desktop stack and build module 1 foundation behind tests.
 3. Push the local commits to GitHub from a machine with access.
+
+## Owner outreach (brief section 14a, added 2026-11-16, D-007)
+
+| Area | What works | State |
+|---|---|---|
+| Six outreach flags | Direct to vendor, Mail, Call, Email, Text, Probate and insolvency | All off, each with its gate |
+| Off-Market Finder menu | Eight items, same menu in both sections | Visible; gated items disabled |
+| Outreach menu | Twelve items, same menu in both sections | Visible; gated items disabled |
+| Built-in controls | Opt-outs, TPS, MPS, consent, human review, approval, audit log | Tested, in memory |
+| Drafting | Template drafts with opt-out footer, approval required | Draft only; no send function |
+
+Not built: any real send, call, mail or text integration (deliberately); persistence of the ledger; the menu screens themselves (only the menu data and gate logic exist); the Campaigns, Replies, Tracking sheet and Suppression list screens.

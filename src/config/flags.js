@@ -25,6 +25,16 @@ export const FLAGS = {
 
   // Paid advertising and paid staging runs
   paidAdvertising: { on: false, gate: 'Section 9: paid advertising stays off until the owner approves a budget' },
+
+  // Owner outreach channels (brief section 14a). All off. Each one needs its own
+  // sign-off on top of the built-in controls in src/outreach (opt-outs, TPS and MPS,
+  // human approval, consent and audit logs, draft-only mode).
+  OUTREACH_DIRECT_TO_VENDOR: { on: false, gate: 'Off until a solicitor signs off owner outreach (compliance row 8, section 14a)' },
+  OUTREACH_MAIL: { on: false, gate: 'Off until MPS checks and a lawful basis are recorded (UK GDPR, PECR; compliance row 8)' },
+  OUTREACH_CALL: { on: false, gate: 'Off until TPS checks and a lawful basis are recorded (PECR; compliance row 8)' },
+  OUTREACH_EMAIL: { on: false, gate: 'Off until recorded opt-in consent and a clear opt-out are in place (PECR; compliance row 10)' },
+  OUTREACH_SMS: { on: false, gate: 'Off until recorded opt-in consent and a clear opt-out are in place (PECR; compliance row 10)' },
+  OUTREACH_PROBATE_INSOLVENCY: { on: false, gate: 'Off: bereaved or struggling people; needs a dated, fair, human-reviewed step and a named professional route (section 14a)' },
 };
 
 export function isOn(name) {
