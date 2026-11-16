@@ -8,8 +8,8 @@
     "node": ">=20"
   },
   "scripts": {
-    "test": "node --test tests/",
-    "check": "node --test tests/"
+    "test": "node --test",
+    "check": "node --test"
   },
   "license": "UNLICENSED"
 }
