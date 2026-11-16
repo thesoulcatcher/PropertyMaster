@@ -5,3 +5,9 @@ The brief allows at most three questions in total. No answer is needed to contin
 1. **Push access.** From the build sandbox, git cannot reach github.com:443 ("Bad access"), so the commits could not be pushed. Can you run `git push -u origin main` from `E:\Property Master Build` on your own machine, or confirm a route the build session can use?
 2. **Framework for Part B.** Part A uses plain Node with no dependencies. Should the web and desktop shells use React with Vite, or another stack? Reply with one name.
 3. **Tax figures.** Purchase tax bands in `src/data/purchase-tax.js` are unverified. Should the next session check each band against gov.uk, Revenue Scotland and the Welsh Revenue Authority before any figure is shown to a member?
+
+## Answers (2026-11-16)
+
+1. Push access: resolved. The commits are on GitHub (origin/main).
+2. Framework: **yes, React with Vite** for the website and desktop app. Record in DECISIONS.md.
+3. Tax figures: **yes**, the next session checks every band against the official sources before any member sees a figure.

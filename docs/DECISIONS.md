@@ -47,3 +47,8 @@ Each decision has a date, the reason and what it affects. Newest at the bottom.
 - Draft-only mode: the module has no send, call, mail or text function. A test fails if any export looks like a send path. A channel being "allowed" means a person may act outside the software after approval; the software sends nothing.
 - Ledger is in memory. Persistence (database and audit store) is a Part B task.
 - Nothing sends, calls or mails while a flag is off. Turning a flag on does not add a send path.
+
+## D-008: Framework and verification confirmed by the owner (2026-11-16)
+
+- Website and desktop app: React with Vite (owner answered yes to the suggestion in QUESTIONS.md).
+- Before any member sees a tax, HMO or area figure, the next session checks it at the official source and sets `verified: true` with the date.
