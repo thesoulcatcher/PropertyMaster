@@ -53,18 +53,23 @@ test('no em dash appears in shipped source text', async () => {
   const fs = await import('node:fs');
   const path = await import('node:path');
   const { fileURLToPath } = await import('node:url');
-  const files = [
-    '../src/data/area-sources.js',
-    '../src/config/flags.js',
-    '../src/data/purchase-tax.js',
-    '../src/calc/purchase-tax.js',
-    '../src/calc/investment.js',
-    '../src/calc/hmo.js',
-    '../src/calc/validate.js',
-  ];
-  const dir = path.dirname(fileURLToPath(import.meta.url));
+  // Every text file in the build, docs and tests included, so new files are covered.
+  const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
+  const skip = new Set(['node_modules', '.git', 'dist', 'build', 'coverage', 'release']);
+  const exts = new Set(['.js', '.mjs', '.jsx', '.json', '.md', '.html', '.css', '.svg']);
+  const files = [];
+  const walk = (d) => {
+    for (const e of fs.readdirSync(d, { withFileTypes: true })) {
+      if (skip.has(e.name)) continue;
+      const p = path.join(d, e.name);
+      if (e.isDirectory()) walk(p);
+      else if (exts.has(path.extname(e.name))) files.push(p);
+    }
+  };
+  walk(root);
+  assert.ok(files.length > 20);
   for (const f of files) {
-    const text = fs.readFileSync(path.join(dir, f), 'utf8');
-    assert.ok(!text.includes(String.fromCharCode(0x2014)), `${f} contains an em dash`);
+    const text = fs.readFileSync(f, 'utf8');
+    assert.ok(!text.includes(String.fromCharCode(0x2014)), `${path.relative(root, f)} contains an em dash`);
   }
 });
