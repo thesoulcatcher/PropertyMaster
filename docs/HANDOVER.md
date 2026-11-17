@@ -1,77 +1,75 @@
-# Handover: PropertyMaster Part A (partial)
+# Handover: PropertyMaster Part A
 
-Date: 2026-11-16. Written at the end of the first build session.
+Date: 2026-11-17. Written at the end of the second build session (Opus 5.5 and Fable 5.2, on the owner's PC).
 
 ## Where the working copy is
 
-- Working copy: **E:\Property Master Build** (drive E:, about 133 GB free at start).
-- D: was not used.
+- **Working copy: `C:\Users\User\Desktop\Property AI Brain\Files\Projects\Property Master\PropertyMaster`** (drive C:).
+- Why C: this time: the Property AI Brain's write guard only allows edits inside the Brain folder, so the earlier copy on E: could not be edited from this session.
+- C: had about 4 GB free at the start. If it runs short, clone again to E: (`git clone` from the master copy) and continue there.
+- `E:\Property Master Build` is the earlier copy, at commit 4f73dc4. It is now **behind** and was not changed. It can be deleted once the new commits are pushed.
 - Master copy: https://github.com/thesoulcatcher/PropertyMaster (branch `main`).
-- **Not pushed.** The build sandbox could not reach github.com over git ("Bad access" on port 443), although curl could fetch the same pages. The repository content was fetched as an archive, and the commits sit only in E:\Property Master Build.
-- To publish the commits, run this on a machine with GitHub access:
+- **Not pushed.** The brief says push after each step; the owner's standing instruction for this session is "do not push without approval". The commits are local only, waiting for that yes.
 
-```bash
-cd "E:/Property Master Build"
-git push -u origin main
-```
+## What is done
 
-Commits, oldest first:
+| Module | State | Tests |
+|---|---|---|
+| 1 Foundation | Sign-up, email verification, sign-in, sessions, password reset and change, lockout, four roles and two sections, append-only audit log, consent record, profile, settings, data export, account deletion | foundation (21) |
+| 2 Pay and trial | 14-day trial (config), tiers in config, recommend-a-friend (one free month each, once, on the friend's first payment), one-step cancel and resume, refunds with cooling-off, trial reminders, revenue summary | billing (14) |
+| 3 Property Mentor | Six courses (strategies by nation, auctions, marketing and ad rules, conveyancing, surveying, brokers), lessons, quizzes marked on the server, progress; seven strategy pages, each with a four-nation table | mentor (9) |
+| 4 Law by nation | Purchase tax, tenancy type, ending a tenancy, rent increases, deposits, landlord registration, HMO licensing; Scotland first; every row with source, check date and source date | law (5) |
+| 5 Calculators | From session one, now with tax tables and HMO rules checked at source | purchase-tax, investment, hmo |
+| Area maps | UK HPI parser and trends, crime (police.uk for England, Wales, NI; Scottish Government for Scotland), flood results with each body's wording, SVG line graph, heat map and choropleth map | area-maps (12) |
+| Developer Studio | Entry buttons, five tabs, 13 project types with draft scopes, 3D floorplan model, furnished and unfurnished walkthrough paths, watermarked plan preview, gated export, gated staging | studio (11) |
+| API server | Every module above behind sign-in and role checks, `node:http`, no dependencies | api (9) |
+| Owner outreach | From session one, unchanged | outreach |
 
-| Commit | What |
-|---|---|
-| c9fc8a0 | Baseline README from the remote |
-| eee1d17 | Scaffold, decisions, questions, spend log |
-| 5e86299 | Purchase tax calculator (SDLT, LBTT, LTT) with tests |
-| 9c7ba6d | Deal, refinance, auction and HMO calculators with edge-case tests |
-| 187c875 | Area risk source registry, feature flags and tests |
-| 75bc25d | Em dash check made encoding-safe |
+Total: **146 tests, all passing.**
 
-## What is done (Part A slice)
+## Stubs
 
-- Calculators, all pure functions with tests (61 tests pass, including the outreach controls):
-  - Purchase tax by nation: England, Northern Ireland (SDLT), Scotland (LBTT with ADS), Wales (LTT).
-  - Deal: total cost, gross and net yield, monthly cashflow, exit profit.
-  - Refinance test: loan to value and interest cover, the lower one wins.
-  - Auction: maximum bid that keeps the target profit (solved by bisection).
-  - HMO: room sizes and occupancy, mandatory licence check (England only).
-- Area risk source registry (`src/data/area-sources.js`): flood, crime and house price sources, each with licence, attribution, level and wording. No data is fetched.
-- Feature flags (`src/config/flags.js`): every gated feature is off, with its compliance row.
-- Docs: DECISIONS.md (D-001 to D-006), QUESTIONS.md (3 questions, as the brief allows), SPEND-LOG.md.
+- **No user interface yet.** The website and desktop app (React with Vite, decision D-008) need packages downloaded from npm. That download waits for the owner's yes (see "Owner decisions" below). The API is ready for it.
+- Email: messages go to an `outbox` table. Nothing is sent.
+- Payments: no provider connected. Stripe is the recorded choice (D-012).
+- Area data: parsers and charts work on example data. No live download or API call is made yet, and no boundary shapes are loaded.
+- 3D: the model and walkthrough are data (boxes and camera stops). A 3D viewer is a UI task.
+- Modules 6 to 12 (deal rooms, community, AI chat, roleplay, marketing templates beyond the course, lettings, admin screens) are not started, apart from the admin API routes.
 
-## What is a stub or not started
+## Gated (off, labelled, each opens only with a recorded sign-off)
 
-- **Module 1, foundation** (setup, design system, sign-up and sign-in, email verification, roles, audit log, data export, account deletion): not started.
-- **Module 2, pay and trial** (trial, tiers, referral, refund, payment provider): not started. No provider chosen yet.
-- **Module 3, Property Mentor courses**: not started.
-- **Module 4, law and rights by nation** (table UI, rows with sources): not started. Only the purchase tax table exists, and it is unverified.
-- **Module 5, calculators**: the logic exists and is tested. No user interface yet.
-- **Area maps (14b)**: the source list exists. No maps, graphs, heat maps or data loading.
-- No web or desktop shell, no database, no Android. The Node project runs tests only.
-
-## Unverified figures (must be checked before any member sees them)
-
-- Every purchase tax band in `src/data/purchase-tax.js` and every surcharge (`verified: false`). They are written from memory.
-- HMO room sizes and England's licence threshold in `src/calc/hmo.js` (`verified: false`).
-- Licence and attribution wording for every area source (`verified: false`).
-- Scotland and Wales HMO rules are not modelled. The module says so.
+Plan export, title splitting, virtual staging, paid subscriptions, referral emails, lettings, joint ventures, finder fees, member payments, insurance, conveyancing, sourcing for others, licensed property data, owner outreach (six channels), paid advertising. A flag cannot be switched on without a sign-off recorded against its compliance row.
 
 ## Exact commands
 
-Run and test (Node 20 or later; this machine has Node 24.22.2 and needs nothing installed):
+Node 22.13 or later (this PC has 24.22.2). Nothing to install.
 
 ```bash
-cd "E:/Property Master Build"
+cd "C:/Users/User/Desktop/Property AI Brain/Files/Projects/Property Master/PropertyMaster"
+```
+
+```bash
 node --test
 ```
 
-Build: there is no build step yet. The web and desktop builds start in Part B.
+```bash
+node src/server/start.js
+```
+
+The server listens on http://127.0.0.1:8787 only. To create the owner account on first start, set `PM_OWNER_EMAIL` and `PM_OWNER_PASSWORD` in the environment first.
+
+Build: no build step yet. The website and Windows installer builds start with the UI.
+
+## Owner decisions waiting
+
+The brief allows three questions in QUESTIONS.md and all three are used, so these are listed here instead.
+
+1. **Push**: may the local commits be pushed to GitHub?
+2. **Download the UI packages**: may the next session run `npm install` for React and Vite (and later Electron for the Windows installer)? These are large, well-known open-source packages from the npm registry.
+3. **Prices**: the price for each tier in `src/config/plans.js`. Until set, no plan can be bought.
 
 ## Next three tasks
 
-1. **Verify the tax and HMO tables.** Check each band and surcharge at gov.uk, Revenue Scotland and the Welsh Revenue Authority, and the HMO room sizes at gov.uk. Set `verified: true` with the date only when checked. Owner: next session, with web access.
-2. **Start module 1, foundation.** Choose the web and desktop framework (see QUESTIONS.md, question 2), then build sign-up, sign-in, roles and the audit log behind tests. Record the choice in DECISIONS.md.
-3. **Publish the commits.** Push from a machine with GitHub access (the command above), then confirm the remote matches E:\Property Master Build.
-
-## Clean-up left for the owner
-
-- Two temporary files are on E: from the archive fetch: `E:\pm-main.zip` and `E:\pm-extract\`. A delete command for them was blocked by the safety check, so they were not removed. Delete them by hand; they are not part of the repository.
+1. Push the commits (after the owner's yes), then delete the old copy on E:.
+2. Build the website shell in React with Vite on top of the API: sign-up, sign-in, the two sections, Property Mentor, law tables, calculators, area charts, Developer Studio. Brand tokens from brief section 9, light and dark.
+3. Check the open items marked "to check" in `src/data/law-by-nation.js` (Scotland short-term lets and rent control areas, Wales rent increases and HMO threshold, England database date, NI registration penalty), then start module 6, deal exchange rooms.

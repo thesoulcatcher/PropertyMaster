@@ -1,64 +1,55 @@
 # Phase 1 report
 
-Status date: 2026-11-16. Part A is only partly built. Part B is not started.
+Status date: 2026-11-17. Part A logic is built and tested. No user interface yet. Part B is not started, apart from the outreach toolset from session one.
 
-## Works (tested)
+## Works (tested, 146 tests passing with `node --test`)
 
-| Area | What works | Tests |
-|---|---|---|
-| Purchase tax | England, Northern Ireland, Scotland, Wales; surcharges; refused inputs | 14 (purchase-tax) |
-| Deal calculator | Total cost, yields, cashflow, exit profit, formulas shown | in investment.test.js |
-| Refinance test | Loan to value and interest cover, limiting test named | in investment.test.js |
-| Auction calculator | Max bid keeping target profit; infeasible case returns zero | in investment.test.js |
-| HMO check | Room sizes (England), occupancy, mandatory licence (England) | 7 (hmo) |
-| Area sources | Licence, attribution, level and wording for each source; blocked sites listed | in area-and-flags.test.js |
-| Feature flags | All gated features off, each with its compliance row | in area-and-flags.test.js |
-
-Total: 61 tests, all passing (`node --test`).
+| Area | What works |
+|---|---|
+| Accounts | Sign-up (member or estate agent only), email verification, sign-in, 30-day sessions, sign-out, lockout after 5 failures for 15 minutes, password reset and change |
+| Roles | member, estate_agent, admin, owner; developer and agent sections chosen by login; only an owner makes staff; the last owner cannot be removed |
+| Records | Append-only audit log (the database refuses edits and deletes); dated consent record with wording version and source; optional consents default off |
+| Your data | Profile, settings, full data export, account deletion that erases personal data |
+| Compliance | The fourteen-row register; sign-offs with professional, role, reference and date; a flag opens only with its sign-off |
+| Pay and trial | Trial, tiers, referral, cancel, resume, refunds, reminders, revenue summary |
+| Property Mentor | Six courses, 19 lessons, quizzes, progress |
+| Law by nation | Seven topics, four nations, Scotland first, sources and dates |
+| Calculators | Purchase tax (checked), deal, refinance, auction, HMO (checked for England, Scotland, NI) |
+| Area maps | HPI trends, crime counts and sourced rates, flood wording, graph, heat map, map |
+| Developer Studio | Projects, draft scopes, 3D model, walkthrough, preview, gated export and staging |
+| API | Every route above, signed in and role checked |
 
 ## Stubs
 
-- Purchase tax tables and surcharges: present but unverified.
-- HMO: room sizes only for England. Scotland, Wales and Northern Ireland return "check the council" with no figure.
-- Area sources: described, not fetched. No maps, graphs or heat maps.
+- No website, no desktop app, no Windows installer, no production build. Waiting for the owner's yes to download React and Vite.
+- Email to outbox only; payment provider not connected; area data not downloaded; no map boundaries loaded.
+- Modules 6 to 12 not started (admin has API routes only).
 
-## Not started
+## Gated (off and labelled)
 
-- Module 1 foundation (auth, roles, audit log, settings, export, deletion, consent record).
-- Module 2 pay and trial (provider not chosen).
-- Module 3 Property Mentor courses.
-- Module 4 law and rights by nation (only the tax table exists).
-- Module 6 onward, Developer Studio, Estate Agent, Off-Market Finder (Part B), virtual staging, lettings.
-- Windows installer, website production build, Android.
-
-## Gated (off, labelled in flags.js)
-
-Studio plan export, title splitting, virtual staging (paid runs), lettings, joint ventures, finder fees, member payments, insurance, conveyancing, sourcing for others, licensed property data, owner outreach, paid advertising.
+See `src/config/flags.js` and `docs/HANDOVER.md`. Every gated feature is off.
 
 ## Dependency check
 
-No Google SDK in any build. `package.json` has no dependencies. Recorded 2026-11-16.
+`package.json` has no dependencies at all, so no Google SDK is in any build. Database is Node's built-in `node:sqlite`. Checked 2026-11-17.
+
+## Figures checked at source on 2026-11-17
+
+- Purchase tax: gov.uk (SDLT), Revenue Scotland (LBTT and ADS), gov.wales (LTT). The Wales higher rates in session one were wrong (an added 4 points); gov.wales publishes a separate table from 11 December 2024, now used.
+- Tenancy, deposit, registration and HMO rows: mygov.scot, gov.uk, gov.wales, rentsmart.gov.wales, nidirect.gov.uk, belfastcity.gov.uk, legislation.gov.uk.
+- Subscription rules: gov.uk showed the DMCC Act 2024 subscription regime still waiting for secondary legislation (consultation outcome 2 April 2026, no commencement date).
 
 ## Not verified
 
-- Every tax rate and HMO rule (see HANDOVER.md).
-- The git push: the commits are local only (see HANDOVER.md).
-- Nothing was run on a device or in a browser.
+- Each "to check" item in `src/data/law-by-nation.js` and `src/data/studio.js` (approvals by nation for building work).
+- The UK HPI CSV column names against the current download.
+- police.uk's current rate limit; each flood dataset's licence.
+- Stripe's FCA authorisation (to check at register.fca.org.uk before connecting).
+- Course content is a draft for the owner's review.
+- Nothing has been run in a browser or on a device.
 
 ## Next three tasks
 
-1. Verify the tax and HMO tables at source and set `verified` with the date.
-2. Choose the web and desktop stack and build module 1 foundation behind tests.
-3. Push the local commits to GitHub from a machine with access.
-
-## Owner outreach (brief section 14a, added 2026-11-16, D-007)
-
-| Area | What works | State |
-|---|---|---|
-| Six outreach flags | Direct to vendor, Mail, Call, Email, Text, Probate and insolvency | All off, each with its gate |
-| Off-Market Finder menu | Eight items, same menu in both sections | Visible; gated items disabled |
-| Outreach menu | Twelve items, same menu in both sections | Visible; gated items disabled |
-| Built-in controls | Opt-outs, TPS, MPS, consent, human review, approval, audit log | Tested, in memory |
-| Drafting | Template drafts with opt-out footer, approval required | Draft only; no send function |
-
-Not built: any real send, call, mail or text integration (deliberately); persistence of the ledger; the menu screens themselves (only the menu data and gate logic exist); the Campaigns, Replies, Tracking sheet and Suppression list screens.
+1. Push (after the owner's yes).
+2. Website shell in React with Vite over the API (after the owner's yes to download it).
+3. Close the "to check" items, then module 6, deal exchange rooms.

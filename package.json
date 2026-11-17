@@ -5,7 +5,7 @@
   "description": "PropertyMaster: UK property platform (Propertymaster and Propertymaster Estate Agent)",
   "type": "module",
   "engines": {
-    "node": ">=20"
+    "node": ">=22.13"
   },
   "scripts": {
     "test": "node --test",
