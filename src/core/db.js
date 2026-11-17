@@ -150,6 +150,25 @@ const MIGRATIONS = [
     created_at TEXT NOT NULL
   );
   `,
+  // 2: payments received (written by the payment provider's confirmed events) and
+  // reminder notices, so each one is written once
+  `
+  CREATE TABLE payments (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    tier TEXT NOT NULL,
+    amount_pence INTEGER NOT NULL,
+    provider_ref TEXT NOT NULL UNIQUE,
+    at TEXT NOT NULL
+  );
+  CREATE TABLE notices_sent (
+    user_id TEXT NOT NULL,
+    kind TEXT NOT NULL,
+    period_key TEXT NOT NULL,
+    at TEXT NOT NULL,
+    PRIMARY KEY (user_id, kind, period_key)
+  );
+  `,
 ];
 
 export function openDb(path = ':memory:') {
