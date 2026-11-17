@@ -26,6 +26,10 @@ export const FLAGS = {
   // Paid advertising and paid staging runs
   paidAdvertising: { on: false, gate: 'Section 9: paid advertising stays off until the owner approves a budget' },
 
+  // Pay and referral (module 2)
+  paidSubscriptions: { on: false, gate: 'Compliance row 9: subscription rules checked, prices set by the owner and the payment provider connected' },
+  referralEmails: { on: false, gate: 'Compliance row 10: referral emails and offers checked against the CAP Code and PECR' },
+
   // Owner outreach channels (brief section 14a). All off. Each one needs its own
   // sign-off on top of the built-in controls in src/outreach (opt-outs, TPS and MPS,
   // human approval, consent and audit logs, draft-only mode).
