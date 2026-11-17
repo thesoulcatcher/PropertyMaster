@@ -20,11 +20,26 @@ test('England: five occupants in two households needs a mandatory licence', () =
   assert.equal(hmoRoomCheck({ nation: 'england', rooms, households: 1 }).mandatoryLicenceNeeded, false);
 });
 
-test('Scotland: licence need is left to the council, not guessed', () => {
-  const r = hmoRoomCheck({ nation: 'scotland', rooms: [{ areaM2: 12 }] });
+test('Scotland: a licence is needed from 3 unrelated tenants, and room sizes are left to the council', () => {
+  const rooms = [1, 2, 3].map((i) => ({ name: `R${i}`, areaM2: 9, occupants: 1 }));
+  const r = hmoRoomCheck({ nation: 'scotland', rooms, households: 3 });
+  assert.equal(r.mandatoryLicenceNeeded, true);
+  assert.equal(r.rooms[0].meetsMinimum, null);
+  assert.equal(r.verified, true);
+  assert.match(r.note, /council/);
+  assert.equal(hmoRoomCheck({ nation: 'scotland', rooms, households: 2 }).mandatoryLicenceNeeded, false);
+});
+
+test('Wales: the licence need is not guessed', () => {
+  const r = hmoRoomCheck({ nation: 'wales', rooms: [{ areaM2: 12 }] });
   assert.equal(r.mandatoryLicenceNeeded, null);
   assert.equal(r.verified, false);
-  assert.match(r.note, /council/);
+});
+
+test('Northern Ireland: 3 people in more than 2 households need a licence', () => {
+  const rooms = [1, 2, 3].map((i) => ({ name: `R${i}`, areaM2: 9, occupants: 1 }));
+  assert.equal(hmoRoomCheck({ nation: 'northern_ireland', rooms, households: 3 }).mandatoryLicenceNeeded, true);
+  assert.equal(hmoRoomCheck({ nation: 'northern_ireland', rooms, households: 2 }).mandatoryLicenceNeeded, false);
 });
 
 test('blank rooms, zero rooms and negative area are refused', () => {

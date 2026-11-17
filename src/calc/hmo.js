@@ -1,25 +1,28 @@
 // HMO room counts and occupancy. Pure functions.
-// The room-size table and licence thresholds are written from memory and are marked
-// verified: false. Check each one at its source before a member relies on it.
+// England, Scotland and Northern Ireland were read at source on 2026-11-17 and are
+// marked verified with that date. Wales could not be read and stays verified: false.
+// Check each one at its source again on the day a member relies on it.
 
 import { num, round2 } from './validate.js';
 
 export const HMO_RULES = {
   england: {
-    source: 'https://www.gov.uk/guidance/houses-in-multiple-occupation-hmo-licensing-and-planning',
-    asOf: '2026-11-16',
-    verified: false,
-    // Room sizes in square metres (Licensing of HMOs regulations, from memory).
+    source: 'https://www.gov.uk/house-in-multiple-occupation-licence',
+    asOf: '2026-11-17',
+    verified: true,
+    note: 'Read on 2026-11-17: a licence is mandatory for 5 or more people in more than 1 household (gov.uk). Room sizes from SI 2018/616 (legislation.gov.uk), in force from 1 October 2018. Councils can license smaller HMOs: check the council.',
+    // Room sizes in square metres (SI 2018/616, Schedule, read 2026-11-17).
     minRoomSize: { oneAdultOver10: 6.51, twoAdultsOver10: 10.22, oneAdultUnder10: 4.64 },
     mandatoryLicence: { minOccupants: 5, minHouseholds: 2 },
   },
   scotland: {
-    source: 'https://www.gov.scot/ (HMO licensing) and the local council',
-    asOf: '2026-11-16',
-    verified: false,
-    note: 'Scotland licenses HMOs through the local council. Check the council rules and room standards; this module does not apply room-size rules to Scotland.',
+    source: 'https://www.mygov.scot/landlord-hmo-licence',
+    asOf: '2026-11-17',
+    verified: true,
+    note: 'Read on 2026-11-17 at mygov.scot: a licence from the local council is needed to rent to 3 or more tenants who are not related or from the same family. Room standards are set by the council: check the council. Room-size rules are not applied here.',
     minRoomSize: null,
-    mandatoryLicence: null,
+    // "Not related": counted here as 3 people from at least 3 families.
+    mandatoryLicence: { minOccupants: 3, minHouseholds: 3 },
   },
   wales: {
     source: 'https://www.gov.wales/ and Rent Smart Wales',
@@ -30,12 +33,12 @@ export const HMO_RULES = {
     mandatoryLicence: null,
   },
   northern_ireland: {
-    source: 'https://www.nidirect.gov.uk/',
-    asOf: '2026-11-16',
-    verified: false,
-    note: 'Check nidirect and the local council. Room-size rules are not applied here.',
+    source: 'https://www.belfastcity.gov.uk/Documents/Northern-Ireland-Houses-in-Multiple-Occupation',
+    asOf: '2026-11-17',
+    verified: true,
+    note: 'Read on 2026-11-17: an HMO is the main home of 3 or more people forming more than 2 households; the NI HMO Unit licenses for 5 years. Room-size rules are not applied here: check the NI HMO Unit.',
     minRoomSize: null,
-    mandatoryLicence: null,
+    mandatoryLicence: { minOccupants: 3, minHouseholds: 3 },
   },
 };
 
@@ -83,6 +86,8 @@ export function hmoRoomCheck({ nation, rooms, households = 1 }) {
     source: rules.source,
     asOf: rules.asOf,
     verified: rules.verified,
-    note: rules.note || 'Room sizes and licence thresholds are NOT VERIFIED. Check the source on the day of use.',
+    note: rules.verified
+      ? `${rules.note} Rules change: check the source again on the day you rely on this.`
+      : rules.note || 'Room sizes and licence thresholds are NOT VERIFIED. Check the source on the day of use.',
   };
 }
