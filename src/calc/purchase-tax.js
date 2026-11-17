@@ -37,18 +37,23 @@ export function purchaseTax({ nation, price, additionalDwelling = false }) {
   const table = PURCHASE_TAX[nation];
   const surcharge = additionalDwelling ? table.surcharges?.additionalDwelling : null;
 
+  // Three surcharge shapes (see src/data/purchase-tax.js):
+  //   'added'  points added to each band rate (England, Northern Ireland)
+  //   'flat'   a flat rate on the whole price, from a minimum price (Scotland, ADS)
+  //   'table'  a separate higher-rate table that replaces the main one (Wales)
+  const kind = surcharge ? surcharge.kind : null;
+  const bands = kind === 'table' ? surcharge.bands : table.bands;
+  const surchargeRate = kind === 'added' ? surcharge.rate : 0;
+
   const breakdown = [];
   let tax = 0;
 
-  // A flat surcharge (Scotland ADS) is added after the band loop; a per-band
-  // surcharge (England, Northern Ireland, Wales) is added to each band rate.
-  for (const band of table.bands) {
+  for (const band of bands) {
     const top = band.to === null ? Infinity : band.to;
     const slice = Math.max(0, Math.min(p, top) - band.from);
     if (slice <= 0 && p <= band.from) {
       break;
     }
-    const surchargeRate = surcharge && !surcharge.flat ? surcharge.rate : 0;
     const rate = band.rate + surchargeRate;
     const amount = slice * rate;
     breakdown.push({
@@ -64,7 +69,7 @@ export function purchaseTax({ nation, price, additionalDwelling = false }) {
   }
 
   let flatSurcharge = 0;
-  if (surcharge && surcharge.flat && p > 0) {
+  if (kind === 'flat' && p > 0 && p >= (surcharge.minPrice ?? 0)) {
     flatSurcharge = p * surcharge.rate;
     tax += flatSurcharge;
   }
@@ -80,9 +85,13 @@ export function purchaseTax({ nation, price, additionalDwelling = false }) {
     taxName: table.tax,
     source: table.source,
     asOf: table.asOf,
+    checkedOn: table.checkedOn,
+    ratesFrom: table.ratesFrom,
+    surchargeKind: kind,
+    surchargeLabel: surcharge ? surcharge.label : null,
     verified: table.verified,
     note: table.verified
-      ? 'Band table verified on the date shown.'
-      : 'NOT VERIFIED: rates are from memory. Check the source on the day of use before relying on this figure.',
+      ? `Rates read at the official source on ${table.checkedOn}. Rates change: check the source again on the day you rely on this figure.`
+      : 'NOT VERIFIED: check the source on the day of use before relying on this figure.',
   };
 }

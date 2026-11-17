@@ -63,8 +63,27 @@ test('every result carries its source, date and verified flag', () => {
   const r = purchaseTax({ nation: 'scotland', price: 250000 });
   assert.match(r.source, /^https:\/\//);
   assert.match(r.asOf, /^\d{4}-\d{2}-\d{2}$/);
-  assert.equal(r.verified, false);
-  assert.match(r.note, /NOT VERIFIED/);
+  assert.equal(r.verified, true);
+  assert.match(r.checkedOn, /^\d{4}-\d{2}-\d{2}$/);
+  assert.ok(r.ratesFrom.length > 0);
+  assert.match(r.note, /check the source again/);
+});
+
+test('Scotland: ADS does not apply below 40,000', () => {
+  const r = purchaseTax({ nation: 'scotland', price: 39999, additionalDwelling: true });
+  assert.equal(r.flatSurcharge, 0);
+  assert.equal(r.tax, 0);
+  assert.equal(purchaseTax({ nation: 'scotland', price: 40000, additionalDwelling: true }).flatSurcharge, 3200);
+});
+
+test('Wales: higher residential rates use their own band table', () => {
+  // 180,000 at 5% = 9,000; 180,000 to 250,000 at 8.5% = 5,950; 250,000 to 300,000 at 10% = 5,000
+  const r = purchaseTax({ nation: 'wales', price: 300000, additionalDwelling: true });
+  assert.equal(r.tax, 19950);
+  assert.equal(r.surchargeKind, 'table');
+  // The higher table charges from the first pound, unlike the main table.
+  assert.equal(purchaseTax({ nation: 'wales', price: 100000, additionalDwelling: true }).tax, 5000);
+  assert.equal(purchaseTax({ nation: 'wales', price: 100000 }).tax, 0);
 });
 
 test('blank, NaN, negative and absurd inputs are refused, never a nonsense number', () => {
