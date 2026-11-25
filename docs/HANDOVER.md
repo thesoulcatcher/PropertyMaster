@@ -36,9 +36,18 @@ Total: **146 tests, all passing.**
 - Production build passes (`npm --prefix web run build`).
 - Not done: the 3D viewer itself, the Windows installer (Electron, needs another download yes), the AI chat and roleplay screens.
 
+## Windows installer (added 2026-11-25)
+
+- `desktop/`: Electron 35.7.5 (its Node is 22.16, so the built-in SQLite works) and electron-builder 25.1.8, installed with the owner's yes on 2026-11-25. No Google package.
+- Built: `desktop/release/Propertymaster Setup 0.1.0.exe`, about 86 MB, not code-signed (Windows will show an "unknown publisher" warning until it is signed).
+- The app starts the Propertymaster server inside itself on 127.0.0.1 and a free port, serves the built website from it, and keeps data in `%APPDATA%\Propertymaster`. Window is sandboxed, has no menu, refuses camera, microphone and location requests, and opens outside links in the computer's default browser. No telemetry, crash reporting or auto-update.
+- Checked 2026-11-25: the built program started, its server answered, the home page and script loaded, and a sign-up was stored.
+- **Build snag on this PC:** the firewall or antivirus blocks electron-builder's own downloader (`app-builder.exe`) from going online, so it cannot fetch NSIS. Fix used: download `nsis-3.0.4.1.7z` and `nsis-resources-3.4.1.7z` from the electron-builder-binaries releases with Node, check each against the sha512 electron-builder expects, and unpack both into `%LOCALAPPDATA%\electron-builder\Cache\nsis\` (folders `nsis-3.0.4.1` and `nsis-resources-3.4.1`). `electronDist` in `desktop/package.json` stops it downloading Electron a second time.
+- Left behind by the test run: one example account (`example.desktop@example.com`) in `%APPDATA%\Propertymaster\propertymaster.db` on the owner's PC. The safety check stopped the session deleting it. Delete that file before first real use to start empty.
+
 ## Stubs
 
-- The Windows installer and the 3D viewer are not built.
+- The 3D viewer is not built. The installer is not code-signed.
 - Email: messages go to an `outbox` table. Nothing is sent.
 - Payments: no provider connected. Stripe is the recorded choice (D-012).
 - Area data: parsers and charts work on example data. No live download or API call is made yet, and no boundary shapes are loaded.
@@ -74,7 +83,7 @@ Build: no build step yet. The website and Windows installer builds start with th
 The brief allows three questions in QUESTIONS.md and all three are used, so these are listed here instead.
 
 1. **Push**: each new set of commits needs the owner's yes. Session two's nine commits were pushed on 2026-11-25 (owner signed in through GitHub Desktop).
-2. **Electron download** for the Windows installer: needs the owner's yes.
+2. **Code signing** for the Windows installer: a code-signing certificate is a paid purchase, so it waits for the owner.
 3. **Prices**: the price for each tier in `src/config/plans.js`. Until set, no plan can be bought.
 
 Clean-up for the owner: two old copies on E: (`E:\Property Master Build` and `E:\PropertyMaster`) are out of date and safe to delete by hand. This PC's safety check stopped the build session deleting them.
@@ -82,5 +91,5 @@ Clean-up for the owner: two old copies on E: (`E:\Property Master Build` and `E:
 ## Next three tasks
 
 1. Load real area data: the UK HPI download and boundary shapes, with their licences checked.
-2. The Windows installer with Electron (after the owner's yes to download it), and a 3D viewer for the Studio model.
+2. A 3D viewer for the Studio model, and an app icon for the installer.
 3. Check the open items marked "to check" in `src/data/law-by-nation.js` (Scotland short-term lets and rent control areas, Wales rent increases and HMO threshold, England database date, NI registration penalty), then start module 6, deal exchange rooms.

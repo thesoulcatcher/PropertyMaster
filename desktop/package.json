@@ -1,0 +1,40 @@
+{
+  "name": "propertymaster-desktop",
+  "productName": "Propertymaster",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Propertymaster for Windows",
+  "author": "Propertyland Group Ltd",
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "dist": "npm --prefix ../web run build && electron-builder --win nsis"
+  },
+  "devDependencies": {
+    "electron": "35.7.5",
+    "electron-builder": "25.1.8"
+  },
+  "build": {
+    "appId": "uk.co.propertymaster.desktop",
+    "productName": "Propertymaster",
+    "directories": { "output": "release" },
+    "electronDist": "node_modules/electron/dist",
+    "files": ["main.cjs", "package.json"],
+    "extraResources": [
+      { "from": "../src", "to": "app-src/src" },
+      { "from": "../web/dist", "to": "app-web" }
+    ],
+    "win": {
+      "target": "nsis",
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "Propertymaster"
+    }
+  },
+  "license": "UNLICENSED"
+}

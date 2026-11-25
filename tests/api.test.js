@@ -97,6 +97,29 @@ test('a studio export without sign-off is refused with the gate message', async 
   assert.ok(prev.data.svg.includes('DRAFT'));
 });
 
+test('with a website folder, pages are served and paths cannot climb out of it', async () => {
+  const { mkdtempSync, writeFileSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const dir = mkdtempSync(join(tmpdir(), 'pm-static-'));
+  writeFileSync(join(dir, 'index.html'), '<!doctype html><title>Example</title>');
+  const s = createApiServer(ctx, { staticDir: dir });
+  await new Promise((r) => s.listen(0, '127.0.0.1', r));
+  const b = `http://127.0.0.1:${s.address().port}`;
+  try {
+    const home = await fetch(`${b}/`);
+    assert.equal(home.status, 200);
+    assert.match(await home.text(), /Example/);
+    assert.match(home.headers.get('content-security-policy'), /default-src 'self'/);
+    // Unknown pages fall back to the app; a climb out of the folder never reads other files.
+    const climb = await fetch(`${b}/..%2f..%2fpackage.json`);
+    assert.ok(!(await climb.text()).includes('"name"'));
+    assert.equal((await fetch(`${b}/api/health`)).status, 200);
+  } finally {
+    await new Promise((r) => s.close(r));
+  }
+});
+
 test('bad JSON and unknown routes get plain errors', async () => {
   const res = await fetch(`${base}/api/auth/sign-in`, { method: 'POST', body: '{nope', headers: { 'Content-Type': 'application/json' } });
   assert.equal(res.status, 400);

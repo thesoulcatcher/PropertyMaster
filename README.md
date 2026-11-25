@@ -35,6 +35,18 @@ Build it for production (output in `web/dist`):
 npm --prefix web run build
 ```
 
-The Windows installer is not built yet.
+Windows desktop app and installer (Electron) live in `desktop/`. Install once:
+
+```bash
+npm --prefix desktop install
+```
+
+Build the website and the installer (output: `desktop/release/Propertymaster Setup 0.1.0.exe`):
+
+```bash
+npm --prefix desktop run dist
+```
+
+The app runs its own server on 127.0.0.1 at a free port and keeps each member's data in their Windows profile (`%APPDATA%\Propertymaster`). It sends nothing anywhere. If the build stops while downloading NSIS (a firewall can block electron-builder's downloader), see "Windows installer" in `docs/HANDOVER.md`.
 
 See `docs/HANDOVER.md` for the state of the build, `docs/PHASE-1-REPORT.md` for what works and what is a stub, and `docs/DECISIONS.md` for the choices made.

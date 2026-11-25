@@ -7,6 +7,8 @@
 // Nothing here sends email, takes money or calls an outside service.
 
 import { createServer } from 'node:http';
+import { readFile, stat } from 'node:fs/promises';
+import { extname, join, normalize, resolve } from 'node:path';
 import { AppError } from '../core/context.js';
 import * as auth from '../core/auth.js';
 import * as account from '../core/account.js';
@@ -228,8 +230,53 @@ export async function handle(ctx, req, res, { allowOrigin = null } = {}) {
   }
 }
 
+const TYPES = {
+  '.html': 'text/html; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.svg': 'image/svg+xml',
+  '.json': 'application/json; charset=utf-8',
+  '.png': 'image/png',
+  '.ico': 'image/x-icon',
+  '.woff2': 'font/woff2',
+};
+
+// Serves the built website (web/dist) for every path outside /api, so the
+// desktop app needs only this one server. Paths cannot climb out of the folder.
+async function serveStatic(dir, req, res) {
+  const url = new URL(req.url, 'http://localhost');
+  const rel = normalize(decodeURIComponent(url.pathname)).replace(/^([/\\])+/, '');
+  let file = resolve(dir, rel || 'index.html');
+  if (!file.startsWith(resolve(dir))) {
+    res.writeHead(403);
+    return res.end();
+  }
+  try {
+    if (!(await stat(file)).isFile()) file = join(dir, 'index.html');
+  } catch {
+    file = join(dir, 'index.html');
+  }
+  try {
+    const body = await readFile(file);
+    res.writeHead(200, {
+      'Content-Type': TYPES[extname(file)] || 'application/octet-stream',
+      'X-Content-Type-Options': 'nosniff',
+      'Referrer-Policy': 'no-referrer',
+      'Content-Security-Policy': "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'",
+    });
+    return res.end(body);
+  } catch {
+    res.writeHead(404);
+    return res.end('Not found');
+  }
+}
+
 export function createApiServer(ctx, opts = {}) {
   return createServer((req, res) => {
+    if (opts.staticDir && (req.method === 'GET' || req.method === 'HEAD') && !req.url.startsWith('/api/')) {
+      serveStatic(opts.staticDir, req, res);
+      return;
+    }
     handle(ctx, req, res, opts);
   });
 }
