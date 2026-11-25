@@ -171,7 +171,8 @@ export function planPreviewSvg(project, { scale = 40 } = {}) {
   }
   const maxX = Math.max(...rooms.map((r) => r.x + r.w));
   const maxY = Math.max(...rooms.map((r) => r.y + r.d));
-  const w = Math.ceil(maxX * scale) + 40;
+  // At least wide enough for the draft warning line, so it is never cut off.
+  const w = Math.max(Math.ceil(maxX * scale) + 40, 620);
   const h = Math.ceil(maxY * scale) + 80;
   const parts = [
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" role="img" aria-label="${esc(project.title)} draft plan">`,

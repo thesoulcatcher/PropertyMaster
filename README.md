@@ -17,6 +17,24 @@ Start the API on this machine (http://127.0.0.1:8787):
 node src/server/start.js
 ```
 
-There is no build step yet: the website and Windows installer come with the user interface.
+The website (React with Vite) lives in `web/`. Install its packages once:
+
+```bash
+npm --prefix web install
+```
+
+Run it while the API is running (opens on http://127.0.0.1:5173):
+
+```bash
+npm --prefix web run dev
+```
+
+Build it for production (output in `web/dist`):
+
+```bash
+npm --prefix web run build
+```
+
+The Windows installer is not built yet.
 
 See `docs/HANDOVER.md` for the state of the build, `docs/PHASE-1-REPORT.md` for what works and what is a stub, and `docs/DECISIONS.md` for the choices made.

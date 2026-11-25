@@ -27,9 +27,18 @@ Date: 2026-11-17. Written at the end of the second build session (Opus 5.5 and F
 
 Total: **146 tests, all passing.**
 
+## Website (added 2026-11-25)
+
+- `web/`: React 18.3.1 and Vite 5.4.11, installed with the owner's yes on 2026-11-25. 62 packages, none from Google.
+- Screens: sign-up, sign-in, email confirm, password reset; home for each section; Property Mentor courses, lessons with the nation tables, quizzes; law by nation; all five calculators; area charts (example data, labelled); Developer Studio (buttons, tabs, new project with a floor plan, draft scope, plan drawing, 3D model and walkthrough summaries, locked export); Off-Market Finder and Outreach menus with gated items; plan, trial, cancel and recommend-a-friend; settings, choices, data download, account deletion; admin (features and sign-offs, members, audit log, revenue).
+- Brand colours from brief section 9, light and dark themes, large text option, system fonts only.
+- Checked in the browser on 2026-11-25: sign-up, sign-in, tax and deal calculators (figures checked by hand), an HMO lesson, area charts, a Studio project with locked export, admin as owner, and phone width with no sideways scrolling.
+- Production build passes (`npm --prefix web run build`).
+- Not done: the 3D viewer itself, the Windows installer (Electron, needs another download yes), the AI chat and roleplay screens.
+
 ## Stubs
 
-- **No user interface yet.** The website and desktop app (React with Vite, decision D-008) need packages downloaded from npm. That download waits for the owner's yes (see "Owner decisions" below). The API is ready for it.
+- The Windows installer and the 3D viewer are not built.
 - Email: messages go to an `outbox` table. Nothing is sent.
 - Payments: no provider connected. Stripe is the recorded choice (D-012).
 - Area data: parsers and charts work on example data. No live download or API call is made yet, and no boundary shapes are loaded.
@@ -64,12 +73,14 @@ Build: no build step yet. The website and Windows installer builds start with th
 
 The brief allows three questions in QUESTIONS.md and all three are used, so these are listed here instead.
 
-1. **Push**: may the local commits be pushed to GitHub?
-2. **Download the UI packages**: may the next session run `npm install` for React and Vite (and later Electron for the Windows installer)? These are large, well-known open-source packages from the npm registry.
+1. **Push**: each new set of commits needs the owner's yes. Session two's nine commits were pushed on 2026-11-25 (owner signed in through GitHub Desktop).
+2. **Electron download** for the Windows installer: needs the owner's yes.
 3. **Prices**: the price for each tier in `src/config/plans.js`. Until set, no plan can be bought.
+
+Clean-up for the owner: two old copies on E: (`E:\Property Master Build` and `E:\PropertyMaster`) are out of date and safe to delete by hand. This PC's safety check stopped the build session deleting them.
 
 ## Next three tasks
 
-1. Push the commits (after the owner's yes), then delete the old copy on E:.
-2. Build the website shell in React with Vite on top of the API: sign-up, sign-in, the two sections, Property Mentor, law tables, calculators, area charts, Developer Studio. Brand tokens from brief section 9, light and dark.
+1. Load real area data: the UK HPI download and boundary shapes, with their licences checked.
+2. The Windows installer with Electron (after the owner's yes to download it), and a 3D viewer for the Studio model.
 3. Check the open items marked "to check" in `src/data/law-by-nation.js` (Scotland short-term lets and rent control areas, Wales rent increases and HMO threshold, England database date, NI registration penalty), then start module 6, deal exchange rooms.
